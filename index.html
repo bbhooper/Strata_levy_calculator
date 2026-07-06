@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>York Views Levy Projection Planner</title>
+<style>
+:root{--bg:#f4f7f6;--card:#fff;--ink:#263238;--muted:#657184;--line:#d8e0dd;--green:#0f9f75;--teal:#0b4b57;--blue:#147eb8;--amber:#b7791f;--red:#b42318;--soft:#e9f7f2;--pale:#eef8f5;--shadow:0 1px 8px rgba(19,43,48,.08)}
+*{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(135deg,#00a98f,#0b7f75);color:white;padding:16px 15px 14px;box-shadow:0 2px 10px rgba(0,0,0,.14)}
+header h1{margin:0;font-size:1.18rem;letter-spacing:-.02em} header p{margin:5px 0 0;font-size:.84rem;opacity:.94;line-height:1.35}
+main{padding:12px;max-width:1120px;margin:0 auto 50px}.topbar{position:sticky;top:0;z-index:5;background:rgba(244,247,246,.96);backdrop-filter:blur(6px);padding:10px 0;border-bottom:1px solid #e3e9e6;margin-bottom:12px}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:3px}.tabBtn{white-space:nowrap;border:1px solid var(--line);background:#fff;color:#234;padding:10px 13px;border-radius:999px;font-weight:800;cursor:pointer}.tabBtn.active{background:var(--teal);color:white;border-color:var(--teal)}.tab{display:none}.tab.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow)}.span3{grid-column:span 3}.span4{grid-column:span 4}.span5{grid-column:span 5}.span6{grid-column:span 6}.span7{grid-column:span 7}.span8{grid-column:span 8}.span12{grid-column:span 12}@media(max-width:850px){.span3,.span4,.span5,.span6,.span7,.span8,.span12{grid-column:span 12}}
+h2{font-size:1.05rem;margin:0 0 12px;display:flex;align-items:center;gap:8px} h3{font-size:.94rem;margin:14px 0 8px;color:#374151}.sub{margin:-4px 0 12px;color:var(--muted);font-size:.84rem;line-height:1.45}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}@media(max-width:620px){.row,.row3{grid-template-columns:1fr}}
+label{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--muted);margin-bottom:4px} input,select,textarea{width:100%;padding:10px;border:1px solid #cbd5d1;border-radius:10px;background:#fff;font-size:1rem} textarea{min-height:86px}.generatedRationale{background:var(--pale);border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:14px;padding:14px;line-height:1.55;color:#20343a}.generatedRationale p{margin:0 0 10px}.generatedRationale p:last-child{margin-bottom:0}input[type=range]{padding:0}.hint{font-size:.8rem;color:var(--muted);line-height:1.38}.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}button{border:0;border-radius:999px;padding:10px 13px;background:var(--teal);color:white;font-weight:800;cursor:pointer}button.secondary{background:#e6efec;color:#17383c}button.warn{background:#7a3d08}.metric{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fbfdfc}.metric strong{display:block;font-size:1.22rem}.metric span{color:var(--muted);font-size:.78rem}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}@media(max-width:850px){.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:430px){.metrics{grid-template-columns:1fr}}
+.tableScroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px}table{width:100%;border-collapse:collapse;font-size:.86rem}.tableScroll table{min-width:720px}@media(max-width:520px){table{font-size:.78rem}.tableScroll table{min-width:720px}}th,td{padding:9px;border-bottom:1px solid #e5ebe8;text-align:right;vertical-align:top}th:first-child,td:first-child{text-align:left}th{color:#4b5563;font-size:.72rem;text-transform:uppercase;letter-spacing:.03em}.bad{color:var(--red);font-weight:800}.ok{color:var(--green);font-weight:800}.amber{color:var(--amber);font-weight:800}.pill{display:inline-block;border-radius:999px;padding:4px 9px;font-size:.76rem;font-weight:900}.pill.ok{background:#e6f6ef;color:var(--green)}.pill.bad{background:#fde8e7;color:var(--red)}.pill.amber{background:#fff4dd;color:var(--amber)} canvas{width:100%;height:280px;border:1px solid #e3ebe7;border-radius:12px;background:#fff}.projectRow{display:grid;grid-template-columns:1.4fr .8fr .8fr .35fr;gap:8px;margin-bottom:8px}@media(max-width:650px){.projectRow{grid-template-columns:1fr 1fr}.projectRow button{grid-column:span 2}}
+.note{background:#fff8e8;border:1px solid #f1d79b;border-radius:12px;padding:10px;font-size:.86rem;line-height:1.4}.infoBox{background:var(--pale);border:1px solid #cdebe3;border-radius:12px;padding:10px;font-size:.84rem;color:#254247;line-height:1.45}.footer{font-size:.76rem;color:var(--muted);margin-top:16px}.reportOnly{display:none}
+.tip{position:relative;display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;background:#e6efec;color:#17383c;font-weight:900;font-size:.78rem;cursor:help;flex:none}.tip::after{content:attr(data-tip);position:absolute;left:50%;bottom:140%;transform:translateX(-50%);width:min(290px,82vw);background:#172b32;color:white;border-radius:10px;padding:10px;font-weight:500;font-size:.78rem;line-height:1.35;box-shadow:0 6px 22px rgba(0,0,0,.22);opacity:0;pointer-events:none;transition:.12s;z-index:20}.tip::before{content:"";position:absolute;left:50%;bottom:118%;transform:translateX(-50%);border:7px solid transparent;border-top-color:#172b32;opacity:0}.tip:hover::after,.tip:hover::before,.tip:focus::after,.tip:focus::before{opacity:1}.scenarioCard{border:1px solid var(--line);border-radius:16px;padding:14px;background:#fff}.scenarioCard.recommended{border-color:#86d9bd;background:#fbfffd}.scenarioTitle{display:flex;justify-content:space-between;gap:8px;align-items:center}.scorebar{height:9px;background:#e6ebe8;border-radius:99px;overflow:hidden}.scorebar>i{display:block;height:100%;background:var(--green);border-radius:99px}.scoregrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.small{font-size:.78rem;color:var(--muted)}.printTitle{font-size:22px;margin-bottom:6px}.sectionBreak{height:1px;background:var(--line);margin:14px 0}.reportBox{border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0;background:#fff}.reportRationale{background:var(--pale);border-left:4px solid var(--teal);padding:12px;border-radius:10px;margin:10px 0 14px;line-height:1.5}.reportRationale p{margin:0 0 8px}.reportRationale p:last-child{margin-bottom:0}.reportGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:650px){.reportGrid{grid-template-columns:1fr}}.printAvoidBreak{break-inside:avoid}.reportChart{width:100%;max-width:900px;border:1px solid var(--line);border-radius:12px;background:#fff;margin:8px 0 14px;display:block}.healthBar{height:14px;background:#e6ebe8;border-radius:99px;overflow:hidden;margin:8px 0}.healthBar>i{display:block;height:100%;background:var(--green);border-radius:99px}.miniKpi{display:grid;grid-template-columns:1fr 1fr;gap:8px}.chartGrid{display:grid;grid-template-columns:1fr;gap:14px}
+@media print{header,.topbar,.inputsCard,.btns,.noPrint,.tip,main>section:not(#report),.footer{display:none!important}body{background:white;color:#111}.card{box-shadow:none;border:0;border-radius:0;padding:0 0 12px}.reportOnly{display:block}.span3,.span4,.span5,.span6,.span7,.span8,.span12{grid-column:span 12}main{max-width:none;padding:0 18px}.grid{display:block}.card{page-break-inside:avoid}#report{display:block!important}.tableScroll{overflow:visible}.tableScroll table{min-width:0;font-size:.78rem}h2{font-size:18px;border-bottom:2px solid #d8e0dd;padding-bottom:6px}.reportBox{border:1px solid #d8e0dd;border-radius:8px;padding:10px;margin:8px 0 12px}.reportRationale{background:#eef8f5;border-left:4px solid #0b7f75;padding:10px 12px;margin:8px 0 14px;line-height:1.45}.reportRationale p{margin:0 0 8px}.reportRationale p:last-child{margin-bottom:0}.reportGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.printAvoidBreak{page-break-inside:avoid}.reportChart{width:100%;max-height:240px;object-fit:contain;border:1px solid #d8e0dd;border-radius:8px;margin:6px 0 12px}.chartGrid{display:block}}
+</style>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b7f75">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="York Views Planner">
+<link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+<header><h1>York Views Levy Projection Planner</h1><p>5-year strata levy model with scenarios, rationale, projected funds, owner payment views, and PDF-style export.</p></header>
+<main>
+<div class="topbar noPrint"><div class="tabs" role="tablist">
+<button class="tabBtn active" onclick="showTab('dashboard',this)">Dashboard</button>
+<button class="tabBtn" onclick="showTab('scenarios',this)">Scenarios</button>
+<button class="tabBtn" onclick="showTab('levies',this)">Levies</button>
+<button class="tabBtn" onclick="showTab('works',this)">Major works</button>
+<button class="tabBtn" onclick="showTab('assumptions',this)">Assumptions</button>
+<button class="tabBtn" onclick="showTab('governance',this)">Governance</button>
+<button class="tabBtn" onclick="showTab('sensitivity',this)">Sensitivity</button>
+<button class="tabBtn" onclick="showTab('compare',this)">Compare</button>
+<button class="tabBtn" onclick="showTab('report',this)">Report / export</button>
+</div></div>
+
+<section id="dashboard" class="tab active"><div class="grid">
+<section class="card span12"><div class="reportOnly"><div class="printTitle"><strong>York Views Levy Projection Report</strong></div><p id="printSubtitle"></p></div><h2>Dashboard <span class="tip" data-tip="A quick read of the current model: starting balances, projected low points, owner cost, and whether the reserve recovers after major works.">i</span></h2><div class="metrics" id="dashboardMetrics"></div></section>
+<section class="card span7"><h2>Reserve projection <span class="tip" data-tip="Shows the estimated reserve fund at each year-end after reserve levies, special levies, inflation-adjusted major works, and arrears assumptions.">i</span></h2><canvas id="reserveChart" width="900" height="300"></canvas></section>
+<section class="card span5"><h2>Interpretation <span class="tip" data-tip="Automatically generated plain-English summary for the selected or manually edited scenario. This wording is included in the exported report.">i</span></h2><div id="interpretation" class="infoBox"></div></section>
+<section class="card span12"><h2>5-year projected funds <span class="tip" data-tip="Admin and reserve balances are kept separate. Total cash is the sum of projected admin and reserve balances, excluding investment accounts unless entered in assumptions.">i</span></h2><div class="tableScroll"><table id="projectionTable"></table></div></section>
+</div></section>
+
+<section id="scenarios" class="tab"><div class="grid">
+<section class="card span12"><h2>Scenario library <span class="tip" data-tip="These presets are strategy options, not advice. Each applies ordinary levy components, special levy amount, duration, and rationale.">i</span></h2><p class="sub">Top three practical scenarios: fund the major works, keep the reserve recovering afterwards, and avoid making owner payments unnecessarily brutal.</p><div class="grid" id="scenarioCards"></div></section>
+<section class="card span12"><h2>Generated scenario rationale <span class="tip" data-tip="This rationale is automatically generated from the selected preset and current model results. It appears in the PDF report and is not manually editable.">i</span></h2><div id="rationaleDisplay" class="generatedRationale"></div></section>
+</div></section>
+
+<section id="levies" class="tab"><div class="grid">
+<section class="card span6 inputsCard"><h2>Ordinary levy <span class="tip" data-tip="Standard strata levies are quarterly per owner. Split the levy between Admin and Reserve so the model can keep routine operating costs separate from capital works funding.">i</span></h2><div class="row"><div><label>Admin component per quarter / owner</label><input id="adminLevy" type="number" step="10" value="570"></div><div><label>Reserve component per quarter / owner</label><input id="reserveLevy" type="number" step="10" value="330"></div></div><p class="hint">Ordinary levy total: <strong id="ordinaryTotal">$900/qtr</strong> per owner.</p></section>
+<section class="card span6 inputsCard"><h2>Special levy <span class="tip" data-tip="Temporary levy for catch-up capital works. You can enter it as monthly, quarterly, or annual per owner; the model converts it to yearly strata income.">i</span></h2><div class="row3"><div><label>Special amount / owner</label><input id="specialAmount" type="number" step="50" value="550"></div><div><label>Payment frequency</label><select id="specialFreq"><option value="quarterly">per quarter</option><option value="monthly">per month</option><option value="annual">per year</option></select></div><div><label>Duration years</label><input id="specialYears" type="number" step="1" value="4"></div></div></section>
+<section class="card span12 inputsCard"><h2>Reserve target / levy rebalancing <span class="tip" data-tip="Optional planning setting: after major works are complete, if the reserve is at or above the target, the model redirects ordinary reserve contributions into Admin instead of continuing to build a larger reserve. Special levies still go to Reserve during their set term.">i</span></h2><div class="row3"><div><label><input id="rebalanceOn" type="checkbox" style="width:auto"> Enable after major works</label><p class="hint">Keeps the total ordinary levy the same, but shifts some of the split from Reserve to Admin once the reserve target is met.</p></div><div><label>Target reserve balance</label><input id="reserveTarget" type="number" step="5000" value="100000"></div><div><label>Minimum reserve levy after target / qtr</label><input id="minReserveLevy" type="number" step="10" value="100"></div></div><p class="hint" id="rebalanceReadout">Rebalancing is off. Reserve contributions continue at the ordinary split.</p></section>
+<section class="card span12"><h2>Owner payment view <span class="tip" data-tip="Shows what an owner pays under the current model, separating ordinary and special levies. This helps assess affordability.">i</span></h2><div class="metrics" id="paymentMetrics"></div></section>
+</div></section>
+
+<section id="works" class="tab"><div class="grid">
+<section class="card span12 inputsCard"><h2>Major works schedule <span class="tip" data-tip="Enter planned capital works in today dollars. The model inflates each item to the year it is paid using the construction inflation assumption.">i</span></h2><div id="projects"></div><div class="btns"><button onclick="addProject('New work',2030,10000)">Add work item</button><button class="secondary" onclick="resetProjects()">Reset default works</button></div><p class="hint">Default assumes 2026-ish pricing around $220k total: roof, concrete remediation, and painting/building envelope works.</p></section>
+</div></section>
+
+<section id="assumptions" class="tab"><div class="grid">
+<section class="card span6 inputsCard"><h2>Current finances <span class="tip" data-tip="Base figures from PropertyIQ screenshot and uploaded 2025 financial statements. Update these when the latest annual report is available.">i</span></h2><div class="row"><div><label>Admin fund opening</label><input id="adminOpen" type="number" step="100" value="24907.57"></div><div><label>Reserve fund opening</label><input id="reserveOpen" type="number" step="100" value="46005.74"></div><div><label>Investment funds</label><input id="investments" type="number" step="100" value="0"></div><div><label>Current arrears</label><input id="arrears" type="number" step="100" value="2102.01"></div></div></section>
+<section class="card span6 inputsCard"><h2>Operating assumptions <span class="tip" data-tip="Admin expenses use the annual budget as a baseline, then increase each year. Arrears reduce levy collection, while recovered arrears add cash back over time.">i</span></h2><div class="row"><div><label>Number of owners/lots</label><input id="lots" type="number" value="21"></div><div><label>Annual admin expenses</label><input id="adminExp" type="number" step="500" value="47980"></div><div><label>Admin expense inflation %</label><input id="adminInfl" type="number" step="0.1" value="4"></div><div><label>Construction inflation %</label><input id="constructInfl" type="number" step="0.1" value="4"></div><div><label>Levy arrears rate %</label><input id="arrearsRate" type="number" step="0.1" value="2"></div><div><label>Reserve interest %</label><input id="interestRate" type="number" step="0.1" value="2"></div></div></section>
+</div></section>
+
+<section id="governance" class="tab"><div class="grid">
+<section class="card span6"><h2>Recommendation engine <span class="tip" data-tip="Automatically assesses whether the current scenario funds the works, keeps both funds positive, reaches or maintains the reserve target, and stays within an affordability threshold.">i</span></h2><div id="recommendationBox" class="infoBox"></div></section>
+<section class="card span6"><h2>Reserve health <span class="tip" data-tip="Shows the reserve fund against the chosen target and gives a simple traffic-light read for Council discussion.">i</span></h2><div id="reserveHealthBox" class="infoBox"></div></section>
+<section class="card span12"><h2>Governance assumptions <span class="tip" data-tip="A transparent register of the inputs behind the model. These assumptions are included in the exported report so owners can see exactly what the projection is based on.">i</span></h2><div class="tableScroll"><table id="governanceTable"></table></div></section>
+</div></section>
+
+<section id="sensitivity" class="tab"><div class="grid">
+<section class="card span12 inputsCard"><h2>What-if stress test <span class="tip" data-tip="Applies extra stress on top of the base scenario. This helps test whether a funding plan still works if quotes are higher, routine expenses rise faster, or more owners fall into arrears.">i</span></h2><div class="row3"><div><label>Extra admin expense inflation %</label><input id="stressAdminInfl" type="number" step="0.5" value="3"></div><div><label>Extra construction cost shock %</label><input id="stressWorkShock" type="number" step="1" value="20"></div><div><label>Extra arrears rate %</label><input id="stressArrears" type="number" step="0.5" value="3"></div></div><p class="hint">Example: with defaults, the stress case tests routine costs rising faster, major works coming in 20% above estimate, and levy arrears increasing.</p></section>
+<section class="card span12"><h2>Sensitivity results <span class="tip" data-tip="Compares the base scenario with a stressed version of the same levy settings. If the stress case still remains positive, the plan is more robust.">i</span></h2><div class="tableScroll"><table id="sensitivityTable"></table></div></section>
+<section class="card span12"><h2>Stress interpretation</h2><div id="stressInterpretation" class="infoBox"></div></section>
+</div></section>
+
+<section id="compare" class="tab"><div class="grid"><section class="card span12"><h2>Scenario comparison <span class="tip" data-tip="Compares the three recommended presets and the current manual scenario using the same works and assumptions.">i</span></h2><div class="tableScroll"><table id="compareTable"></table></div></section></div></section>
+
+<section id="report" class="tab"><div class="grid">
+<section class="card span12"><h2>Report / export <span class="tip" data-tip="Use your browser print dialog to save as PDF. The report includes the selected rationale, assumptions, projected balances, owner payments, and notes.">i</span></h2><p class="sub">Once the Council settles on amounts, export a PDF-style report for circulation or meeting notes.</p><div class="btns noPrint"><button onclick="window.print()">Export PDF report</button><button class="secondary" onclick="downloadApp()">Download app</button></div></section>
+<section class="card span12"><h2>Report preview</h2><div id="reportPreview"></div></section>
+</div></section>
+
+<div class="footer">Planning model only, not financial advice. Confirm current levy splits, quotes, engineering reports, GST treatment, strata accounting, insurance implications, and legislative requirements before putting a motion to owners.</div>
+</main>
+<script>
+const fmt = n => (n<0?'$-'+Math.abs(n).toLocaleString(undefined,{maximumFractionDigits:0}):'$'+n.toLocaleString(undefined,{maximumFractionDigits:0}));
+const fmt2 = n => (n<0?'$-'+Math.abs(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}):'$'+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}));
+const today = new Date().toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});
+const scenarioRationales = {
+ owner:`Owner First is designed to protect the building while keeping the quarterly burden as low as possible without allowing either the admin fund or reserve fund to go negative in the base model. It assumes essential works can be staged over four years. The ordinary levy is set at $900/qtr, split to keep routine admin costs funded while improving the long-term reserve base, and the special levy is kept lower than the faster options. This is likely the most owner-palatable viable option, but it depends on the roof, concrete and painting works being safely sequenced without creating avoidable deterioration or insurance/liability risk.`,
+ balanced:`Balanced Recovery is designed to complete priority works within roughly three years while keeping both the admin and reserve funds positive in the base model. It uses a higher ordinary levy than Owner First to give both funds more breathing room, and a three-year special levy to fund the major works faster. Owner payments are materially higher during the special levy period, so communication and evidence such as quotes or engineering reports will be important.`,
+ accelerated:`Accelerated Renewal prioritises asset protection, contingency and stronger ending balances. It raises more money sooner, giving the strata a better chance of absorbing higher 2026 construction prices or unexpected concrete/roof findings while keeping all projected funds positive in the base model. This is the lowest building-risk option, but it is also the hardest on owners and may be more difficult to pass at an AGM unless current quotes show the scope is urgent and cannot be staged.`,
+ manual:`This is a manually generated scenario. The interpretation is based on the projected reserve low point, whether the reserve recovers after major works, and the quarterly cost to owners. Use this wording as a starting point for Council discussion and adjust it if quotes, engineering advice, or owner affordability concerns change the preferred approach.`
+};
+const presets = {
+ owner:{name:'Owner First', tag:'Recommended', admin:570,reserve:330,special:550,freq:'quarterly',years:4,key:'owner'},
+ balanced:{name:'Balanced Recovery', tag:'Faster works', admin:590,reserve:360,special:700,freq:'quarterly',years:3,key:'balanced'},
+ accelerated:{name:'Accelerated Renewal', tag:'Asset protection', admin:600,reserve:400,special:800,freq:'quarterly',years:3,key:'accelerated'}
+};
+let state={selected:'owner'};
+let projectsDefault=[{name:'Roof works',year:2026,cost:70000},{name:'Concrete remediation / engineer-led repairs',year:2027,cost:85000},{name:'External painting / building envelope',year:2028,cost:65000}];
+let projects=JSON.parse(JSON.stringify(projectsDefault));
+function showTab(id,btn){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');calc();}
+function val(id){return parseFloat(document.getElementById(id).value)||0}
+function readInputs(){return {lots:val('lots'),adminOpen:val('adminOpen'),reserveOpen:val('reserveOpen'),investments:val('investments'),arrears:val('arrears'),adminExp:val('adminExp'),adminInfl:val('adminInfl')/100,constructInfl:val('constructInfl')/100,workCostShock:0,arrearsRate:val('arrearsRate')/100,interestRate:val('interestRate')/100,adminLevy:val('adminLevy'),reserveLevy:val('reserveLevy'),specialAmount:val('specialAmount'),specialFreq:document.getElementById('specialFreq').value,specialYears:val('specialYears'),rebalanceOn:document.getElementById('rebalanceOn')?.checked||false,reserveTarget:val('reserveTarget'),minReserveLevy:val('minReserveLevy'),stressAdminInfl:val('stressAdminInfl')/100,stressWorkShock:val('stressWorkShock')/100,stressArrears:val('stressArrears')/100}};
+function specialAnnual(x){let m={monthly:12,quarterly:4,annual:1}[x.specialFreq];return x.specialAmount*m*x.lots;}
+function specialQuarter(x){let m={monthly:3,quarterly:1,annual:.25}[x.specialFreq];return x.specialAmount*m;}
+function projectCostInYear(p,x){return p.cost*(1+(x.workCostShock||0))*Math.pow(1+x.constructInfl, Math.max(0,p.year-2026));}
+function model(override){
+  let x={...readInputs(),...(override||{})};
+  let rows=[], admin=x.adminOpen, reserve=x.reserveOpen, recovered=x.arrears/2;
+  let start=2026;
+  let lastWorksYear = projects.length ? Math.max(...projects.map(p=>p.year)) : start;
+  let ordinaryTotalPerQtr = x.adminLevy + x.reserveLevy;
+  for(let i=0;i<5;i++){
+    let year=start+i;
+    let works=projects.filter(p=>p.year==year).reduce((s,p)=>s+projectCostInYear(p,x),0);
+    let interest=Math.max(0,reserve)*x.interestRate;
+    let baseAdminLevy=x.adminLevy, baseReserveLevy=x.reserveLevy;
+    let effectiveAdminLevy=baseAdminLevy, effectiveReserveLevy=baseReserveLevy;
+    let rebalanced=0;
+    // After the scheduled major works window, optionally stop over-funding Reserve once target is met.
+    // The total ordinary levy stays the same; only the Admin/Reserve split changes.
+    if(x.rebalanceOn && year>lastWorksYear){
+      let minReserveAnnual=Math.max(0,x.minReserveLevy*4*x.lots);
+      let baseReserveAnnual=baseReserveLevy*4*x.lots;
+      let reserveBeforeOrdinary=reserve + interest - works;
+      let neededToTarget=Math.max(minReserveAnnual, x.reserveTarget - reserveBeforeOrdinary);
+      let actualReserveAnnual=Math.max(0, Math.min(baseReserveAnnual, neededToTarget));
+      effectiveReserveLevy=actualReserveAnnual/(4*x.lots||1);
+      effectiveAdminLevy=ordinaryTotalPerQtr-effectiveReserveLevy;
+      rebalanced=baseReserveAnnual-actualReserveAnnual;
+    }
+    let adminIncome=effectiveAdminLevy*4*x.lots;
+    let reserveIncome=effectiveReserveLevy*4*x.lots;
+    let spIncome=(i<x.specialYears)?specialAnnual(x):0;
+    let grossLevies=adminIncome+reserveIncome+spIncome;
+    let unpaid=grossLevies*x.arrearsRate;
+    let adminUnpaid=unpaid*(adminIncome/grossLevies||0);
+    let reserveUnpaid=unpaid*((reserveIncome+spIncome)/grossLevies||0);
+    let adminExpense=x.adminExp*Math.pow(1+x.adminInfl,i);
+    admin += adminIncome - adminUnpaid + (i<2?recovered/2:0) - adminExpense;
+    reserve += reserveIncome + spIncome + interest - reserveUnpaid - works;
+    rows.push({year,admin,reserve,total:admin+reserve+x.investments,works,adminIncome,reserveIncome,spIncome,adminExpense,interest,unpaid,effectiveAdminLevy,effectiveReserveLevy,rebalanced});
+  }
+  return {x,rows,minReserve:Math.min(...rows.map(r=>r.reserve)),endReserve:rows[rows.length-1].reserve,minAdmin:Math.min(...rows.map(r=>r.admin)),totalWorks:projects.reduce((s,p)=>s+projectCostInYear(p,x),0),ordinaryQuarter:ordinaryTotalPerQtr,specialQuarter:specialQuarter(x),ownerAnnual:ordinaryTotalPerQtr*4+specialQuarter(x)*4,lowestTotal:Math.min(...rows.map(r=>r.total)),lastWorksYear};
+}
+function score(m){let protection=Math.max(1,Math.min(10, 5 + (m.minReserve/12000)));let affordability=Math.max(1,Math.min(10, 12 - ((m.ordinaryQuarter+m.specialQuarter)-750)/90));let sustainability=Math.max(1,Math.min(10, 5 + ((m.endReserve-m.minReserve)/15000) + (m.endReserve>m.x.reserveOpen?1:0)));let approval=Math.max(1,Math.min(10,(affordability*.7+sustainability*.3)));return {protection,affordability,sustainability,approval};}
+function classify(n, good=0){return n<good?'bad':n<good+20000?'amber':'ok'}
+function interpretation(m){let s=score(m);let totalQ=m.ordinaryQuarter+m.specialQuarter;let risk=m.minReserve<0?'high':m.minReserve<40000?'moderate':'low';let trend=m.endReserve>m.x.reserveOpen?'an upward reserve trend by year five':'a weaker reserve position than today';return `<p><strong>${state.selected==='manual'?'Manual scenario':presets[state.selected]?.name||'Manual scenario'}:</strong> This model creates a total owner payment of <strong>${fmt(totalQ)} per quarter</strong> during the special levy period, then falls back to an ordinary levy of <strong>${fmt(m.ordinaryQuarter)} per quarter</strong>.</p><p>The projected reserve low point is <strong class="${classify(m.minReserve,40000)}">${fmt(m.minReserve)}</strong>, with an ending reserve of <strong>${fmt(m.endReserve)}</strong>. On the current assumptions, building funding risk is <strong>${risk}</strong> and the model shows ${trend}.</p><p>Scores: building protection ${s.protection.toFixed(1)}/10, owner affordability ${s.affordability.toFixed(1)}/10, reserve sustainability ${s.sustainability.toFixed(1)}/10, likely AGM acceptability ${s.approval.toFixed(1)}/10.</p>`}
+function generatedRationale(m){
+  const selectedName = state.selected==='manual' ? 'Manual scenario' : (presets[state.selected]?.name || 'Manual scenario');
+  const presetText = state.selected==='manual' ? scenarioRationales.manual : scenarioRationales[state.selected];
+  const s=score(m);
+  const totalQ=m.ordinaryQuarter+m.specialQuarter;
+  const specialText=m.specialQuarter>0 ? `${fmt(m.specialQuarter)} per quarter equivalent for ${m.x.specialYears} years` : 'no special levy';
+  const adminRead=m.minAdmin<0 ? 'The admin fund goes negative, so the ordinary levy split is not sufficient for routine operating costs.' : `The admin fund remains positive, with a low point of ${fmt(m.minAdmin)}.`;
+  const reserveRead=m.minReserve<0 ? 'The reserve fund goes negative, meaning this scenario does not fully fund the assumed works.' : m.minReserve<40000 ? `The reserve fund remains positive but tight, with a low point of ${fmt(m.minReserve)}.` : `The reserve fund remains positive with a stronger buffer, with a low point of ${fmt(m.minReserve)}.`;
+  const trend=m.endReserve>m.x.reserveOpen ? `By year five the reserve is projected to recover to ${fmt(m.endReserve)}, which is above the current opening reserve.` : `By year five the reserve is projected to be ${fmt(m.endReserve)}, which is below the current opening reserve and may require later levy review.`;
+  const affordability=s.affordability<5 ? 'Owner affordability is the main weakness; the quarterly cost is likely to be difficult for some owners and may reduce AGM support.' : s.affordability<7 ? 'Owner affordability is moderate; the plan is workable but should be explained carefully and may need payment flexibility.' : 'Owner affordability is comparatively stronger than the faster options, while still addressing the funding gap.';
+  return `${presetText}
+
+Under the current inputs, ${selectedName} models an ordinary levy of ${fmt(m.ordinaryQuarter)} per quarter, plus ${specialText}. During the special levy period owners would pay about ${fmt(totalQ)} per quarter. ${adminRead} ${reserveRead} ${trend}
+
+Interpretation: building protection ${s.protection.toFixed(1)}/10, owner affordability ${s.affordability.toFixed(1)}/10, reserve sustainability ${s.sustainability.toFixed(1)}/10, and likely AGM acceptability ${s.approval.toFixed(1)}/10. ${affordability}`;
+}
+
+function recommendationEngine(m){
+  const s=score(m);
+  const totalQ=m.ordinaryQuarter+m.specialQuarter;
+  const target=m.x.reserveTarget||100000;
+  const targetPct=target?Math.max(0,Math.min(150,(m.endReserve/target)*100)):0;
+  const anyNegative=m.minAdmin<0||m.minReserve<0||m.lowestTotal<0;
+  const reachesTarget=m.endReserve>=target || m.rows.some(r=>r.reserve>=target);
+  let verdict='Recommended with monitoring', cls='amber';
+  if(anyNegative){verdict='Not recommended under current inputs'; cls='bad';}
+  else if(m.minReserve>=40000 && m.minAdmin>=0 && reachesTarget && s.affordability>=5){verdict='Financially sustainable'; cls='ok';}
+  else if(m.minReserve>=0 && m.minAdmin>=0){verdict='Workable, but tight'; cls='amber';}
+  const why = anyNegative ? 'One or more funds becomes negative, so the levy split or special levy amount is not sufficient for the assumed works and operating costs.' : reachesTarget ? 'The model remains positive and reaches or maintains the chosen reserve target during the projection.' : 'The model remains positive, but the reserve target is not reached within five years.';
+  return `<p><strong class="${cls}">${verdict}</strong></p><p>${why}</p><div class="miniKpi"><div class="metric"><strong>${s.protection.toFixed(1)}/10</strong><span>Building protection</span></div><div class="metric"><strong>${s.affordability.toFixed(1)}/10</strong><span>Owner affordability</span></div><div class="metric"><strong>${s.sustainability.toFixed(1)}/10</strong><span>Reserve sustainability</span></div><div class="metric"><strong>${s.approval.toFixed(1)}/10</strong><span>AGM acceptability</span></div></div><p class="small">Reserve target progress: ${targetPct.toFixed(0)}% of ${fmt(target)} by year five. Peak owner payment during special levy: ${fmt(totalQ)}/qtr.</p>`;
+}
+function reserveHealth(m){
+  const target=m.x.reserveTarget||100000;
+  const floor=Math.max(40000,target*0.6);
+  const pct=target?Math.max(0,Math.min(150,(m.endReserve/target)*100)):0;
+  const lowPct=target?Math.max(0,Math.min(150,(m.minReserve/target)*100)):0;
+  let status=m.minReserve<0?'Unsustainable':m.minReserve<floor?'Watch':m.endReserve>=target?'Healthy':'Building toward target';
+  let cls=m.minReserve<0?'bad':m.minReserve<floor?'amber':'ok';
+  return `<p><strong class="${cls}">${status}</strong></p><p>Target reserve: <strong>${fmt(target)}</strong>. Lowest projected reserve: <strong>${fmt(m.minReserve)}</strong>. Ending reserve: <strong>${fmt(m.endReserve)}</strong>.</p><p class="small">For this complex, a practical reserve range is roughly $80k–$120k after major works, with $100k a reasonable planning target.</p><div class="healthBar"><i style="width:${Math.min(100,pct)}%"></i></div><p class="small">Ending reserve is ${pct.toFixed(0)}% of target. Lowest reserve is ${lowPct.toFixed(0)}% of target.</p>`;
+}
+function governanceAssumptions(m){
+  const x=m.x;
+  const rows=[
+    ['Lots/owners', x.lots], ['Opening admin fund', fmt2(x.adminOpen)], ['Opening reserve fund', fmt2(x.reserveOpen)], ['Investments included', fmt2(x.investments)], ['Current arrears', fmt2(x.arrears)], ['Annual admin expense base', fmt(x.adminExp)], ['Admin expense inflation', (x.adminInfl*100).toFixed(1)+'%'], ['Construction inflation', (x.constructInfl*100).toFixed(1)+'%'], ['Levy arrears assumption', (x.arrearsRate*100).toFixed(1)+'%'], ['Reserve interest', (x.interestRate*100).toFixed(1)+'%'], ['Ordinary admin component', fmt(x.adminLevy)+'/qtr owner'], ['Ordinary reserve component', fmt(x.reserveLevy)+'/qtr owner'], ['Special levy', fmt(m.specialQuarter)+'/qtr equivalent owner'], ['Special levy duration', x.specialYears+' years'], ['Reserve target', fmt(x.reserveTarget)], ['Rebalancing after major works', x.rebalanceOn?'Enabled':'Off']
+  ];
+  let html='<tr><th>Assumption</th><th>Current input</th></tr>'; rows.forEach(r=>html+=`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`); return html;
+}
+function renderSensitivity(m){
+  const stressed=model({adminInfl:m.x.adminInfl+(m.x.stressAdminInfl||0), constructInfl:m.x.constructInfl, workCostShock:(m.x.stressWorkShock||0), arrearsRate:m.x.arrearsRate+(m.x.stressArrears||0)});
+  const scenarios=[['Base scenario',m],['Stress scenario',stressed]];
+  let html='<tr><th>Case</th><th>Lowest admin</th><th>Lowest reserve</th><th>Ending reserve</th><th>Total works</th><th>Read</th></tr>';
+  scenarios.forEach(([name,mm])=>{let read=(mm.minAdmin<0||mm.minReserve<0)?'Fails under assumptions':mm.minReserve<40000?'Positive but tight':'Positive';html+=`<tr><td>${name}</td><td class="${mm.minAdmin<0?'bad':'ok'}">${fmt(mm.minAdmin)}</td><td class="${mm.minReserve<0?'bad':mm.minReserve<40000?'amber':'ok'}">${fmt(mm.minReserve)}</td><td>${fmt(mm.endReserve)}</td><td>${fmt(mm.totalWorks)}</td><td>${read}</td></tr>`});
+  document.getElementById('sensitivityTable').innerHTML=html;
+  const diff=stressed.endReserve-m.endReserve;
+  document.getElementById('stressInterpretation').innerHTML = stressed.minAdmin<0||stressed.minReserve<0 ? `<p><strong class="bad">Stress case fails.</strong> Under the selected what-if assumptions, at least one fund becomes negative. This suggests the scenario has limited contingency and may need a higher special levy, longer special levy duration, a larger ordinary levy, or tighter staging of works.</p>` : `<p><strong class="ok">Stress case remains positive.</strong> The stressed ending reserve is ${fmt(stressed.endReserve)}, which is ${fmt(Math.abs(diff))} ${diff<0?'lower':'higher'} than the base case. This suggests the plan has some resilience to higher costs or arrears.</p>`;
+}
+
+function renderProjects(){let box=document.getElementById('projects');box.innerHTML='';projects.forEach((p,i)=>{let d=document.createElement('div');d.className='projectRow';d.innerHTML=`<input aria-label="Work name" value="${p.name}" oninput="projects[${i}].name=this.value; calc()"><input type="number" aria-label="Year" value="${p.year}" oninput="projects[${i}].year=parseInt(this.value)||2026; calc()"><input type="number" aria-label="Cost" value="${p.cost}" oninput="projects[${i}].cost=parseFloat(this.value)||0; calc()"><button class="secondary" onclick="projects.splice(${i},1);renderProjects();calc()">×</button>`;box.appendChild(d);});}
+function addProject(n,y,c){projects.push({name:n,year:y,cost:c});renderProjects();calc();}
+function resetProjects(){projects=JSON.parse(JSON.stringify(projectsDefault));renderProjects();calc();}
+function applyPreset(key){let p=presets[key];document.getElementById('adminLevy').value=p.admin;document.getElementById('reserveLevy').value=p.reserve;document.getElementById('specialAmount').value=p.special;document.getElementById('specialFreq').value=p.freq;document.getElementById('specialYears').value=p.years;state.selected=key;calc();}
+function manualChanged(){state.selected='manual';}
+function renderScenarioCards(){let html='';Object.values(presets).forEach(p=>{let m=model({adminLevy:p.admin,reserveLevy:p.reserve,specialAmount:p.special,specialFreq:p.freq,specialYears:p.years});let s=score(m);html+=`<div class="span4"><div class="scenarioCard ${p.key==='owner'?'recommended':''}"><div class="scenarioTitle"><h3>${p.name}</h3><span class="pill ${p.key==='owner'?'ok':'amber'}">${p.tag}</span></div><p class="small">Ordinary ${fmt(p.admin+p.reserve)}/qtr + special ${fmt(specialQuarter({specialAmount:p.special,specialFreq:p.freq}))}/qtr for ${p.years} years.</p><p class="hint">${scenarioRationales[p.key]}</p><div class="scoregrid"><div><span class="small">Owner affordability</span><div class="scorebar"><i style="width:${s.affordability*10}%"></i></div></div><div><span class="small">Reserve sustainability</span><div class="scorebar"><i style="width:${s.sustainability*10}%"></i></div></div></div><div class="btns"><button onclick="applyPreset('${p.key}')">Use scenario</button></div></div></div>`});document.getElementById('scenarioCards').innerHTML=html;}
+function drawChart(rows){let c=document.getElementById('reserveChart'),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);let vals=[0,...rows.map(r=>r.reserve)];let max=Math.max(...vals,80000)*1.15,min=Math.min(...vals,-10000);let pad=45;ctx.strokeStyle='#e5ebe8';ctx.lineWidth=1;ctx.font='13px system-ui';ctx.fillStyle='#667085';for(let i=0;i<5;i++){let y=pad+(h-pad*1.5-pad)*i/4;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();let val=max-(max-min)*i/4;ctx.fillText(fmt(val),5,y+4);}let pts=rows.map((r,i)=>({x:pad+(w-pad*2)*i/(rows.length-1),y:pad+(max-r.reserve)/(max-min)*(h-pad*2),r}));ctx.strokeStyle='#0f9f75';ctx.lineWidth=4;ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();pts.forEach(p=>{ctx.fillStyle=p.r.reserve<0?'#b42318':'#0f9f75';ctx.beginPath();ctx.arc(p.x,p.y,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#263238';ctx.fillText(p.r.year,p.x-16,h-15);});}
+function calc(){let m=model();document.getElementById('ordinaryTotal').textContent=fmt(m.ordinaryQuarter)+'/qtr';let rows=m.rows;let health=m.minReserve<0?'High risk':m.minReserve<40000?'Watch closely':'Healthy';document.getElementById('dashboardMetrics').innerHTML=`<div class="metric"><strong>${fmt2(m.x.adminOpen)}</strong><span>Opening admin fund</span></div><div class="metric"><strong>${fmt2(m.x.reserveOpen)}</strong><span>Opening reserve fund</span></div><div class="metric"><strong>${fmt(m.totalWorks)}</strong><span>Inflated major works modelled</span></div><div class="metric"><strong class="${m.minReserve<40000?'amber':'ok'}">${health}</strong><span>Reserve risk read</span></div><div class="metric"><strong>${fmt(m.ordinaryQuarter+m.specialQuarter)}</strong><span>Owner quarterly payment during special levy</span></div><div class="metric"><strong class="${m.minReserve<0?'bad':'ok'}">${fmt(m.minReserve)}</strong><span>Lowest projected reserve</span></div><div class="metric"><strong class="${m.minAdmin<0?'bad':'ok'}">${fmt(m.minAdmin)}</strong><span>Lowest projected admin</span></div><div class="metric"><strong>${fmt(m.endReserve)}</strong><span>Reserve at year 5</span></div>`;
+document.getElementById('paymentMetrics').innerHTML=`<div class="metric"><strong>${fmt(m.ordinaryQuarter)}</strong><span>Ordinary levy per quarter</span></div><div class="metric"><strong>${fmt(m.specialQuarter)}</strong><span>Special levy equivalent per quarter</span></div><div class="metric"><strong>${fmt(m.ordinaryQuarter+m.specialQuarter)}</strong><span>Total per quarter during special levy</span></div><div class="metric"><strong>${fmt(m.ownerAnnual)}</strong><span>Total per year during special levy</span></div>`;
+let rr=document.getElementById('rebalanceReadout'); if(rr){let shifted=m.rows.reduce((s,r)=>s+(r.rebalanced||0),0); rr.innerHTML=m.x.rebalanceOn?`Rebalancing is on. After major works (${m.lastWorksYear}), up to <strong>${fmt(shifted)}</strong> is shifted from Reserve to Admin over the projection if the reserve target is met. Target reserve: <strong>${fmt(m.x.reserveTarget)}</strong>.`:'Rebalancing is off. Reserve contributions continue at the ordinary split.';}
+let table='<tr><th>Year</th><th>Admin end</th><th>Reserve end</th><th>Total cash</th><th>Major works paid</th><th>Reserve ordinary raised</th><th>Special levies raised</th><th>Rebalanced to admin</th><th>Unpaid levies modelled</th></tr>';rows.forEach(r=>table+=`<tr><td>${r.year}</td><td class="${r.admin<0?'bad':''}">${fmt(r.admin)}</td><td class="${r.reserve<0?'bad':r.reserve<40000?'amber':'ok'}">${fmt(r.reserve)}</td><td>${fmt(r.total)}</td><td>${fmt(r.works)}</td><td>${fmt(r.reserveIncome)}</td><td>${fmt(r.spIncome)}</td><td>${fmt(r.rebalanced||0)}</td><td>${fmt(r.unpaid)}</td></tr>`);document.getElementById('projectionTable').innerHTML=table;
+document.getElementById('interpretation').innerHTML=interpretation(m);document.getElementById('rationaleDisplay').innerHTML=textToParagraphs(generatedRationale(m));document.getElementById('recommendationBox').innerHTML=recommendationEngine(m);document.getElementById('reserveHealthBox').innerHTML=reserveHealth(m);document.getElementById('governanceTable').innerHTML=governanceAssumptions(m);renderSensitivity(m);drawChart(rows);renderCompare();renderReport(m);}
+function renderCompare(){let scenarios={...presets,manual:{name:'Manual current',admin:val('adminLevy'),reserve:val('reserveLevy'),special:val('specialAmount'),freq:document.getElementById('specialFreq').value,years:val('specialYears'),key:'manual'}};let html='<tr><th>Scenario</th><th>Ordinary qtr</th><th>Special qtr</th><th>Years</th><th>Lowest reserve</th><th>Ending reserve</th><th>Owner annual during special</th><th>Read</th></tr>';Object.values(scenarios).forEach(p=>{let m=model({adminLevy:p.admin,reserveLevy:p.reserve,specialAmount:p.special,specialFreq:p.freq,specialYears:p.years});let read=(m.minAdmin<0||m.minReserve<0)?'Shortfall risk':m.minReserve<40000?'Tight reserve buffer':'Sustainable';html+=`<tr><td>${p.name}</td><td>${fmt(p.admin+p.reserve)}</td><td>${fmt(specialQuarter({specialAmount:p.special,specialFreq:p.freq}))}</td><td>${p.years}</td><td class="${m.minReserve<0?'bad':m.minReserve<40000?'amber':'ok'}">${fmt(m.minReserve)}</td><td>${fmt(m.endReserve)}</td><td>${fmt((p.admin+p.reserve+specialQuarter({specialAmount:p.special,specialFreq:p.freq}))*4)}</td><td>${read}</td></tr>`});document.getElementById('compareTable').innerHTML=html;}
+function esc(str){return String(str ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function textToParagraphs(str){
+  let cleaned = String(str || '').trim();
+  if(!cleaned) return '<p>No rationale entered.</p>';
+  return cleaned.split(/\n\s*\n|\n/).map(t=>`<p>${esc(t.trim())}</p>`).join('');
+}
+function reportProjectionTable(rows){
+  let html='<div class="tableScroll"><table><tr><th>Year</th><th>Admin end</th><th>Reserve end</th><th>Total cash</th><th>Major works</th><th>Reserve ordinary</th><th>Special levies</th><th>Rebalanced to admin</th></tr>';
+  rows.forEach(r=>html+=`<tr><td>${r.year}</td><td>${fmt(r.admin)}</td><td>${fmt(r.reserve)}</td><td>${fmt(r.total)}</td><td>${fmt(r.works)}</td><td>${fmt(r.reserveIncome)}</td><td>${fmt(r.spIncome)}</td><td>${fmt(r.rebalanced||0)}</td></tr>`);
+  return html+'</table></div>';
+}
+function reportWorksTable(m){
+  let baseYear=2026;
+  let html='<div class="tableScroll"><table><tr><th>Work item</th><th>Planned year</th><th>Base estimate</th><th>Inflation-adjusted model cost</th></tr>';
+  projects.forEach(p=>{let adj=p.cost*Math.pow(1+m.x.constructInfl, Math.max(0,p.year-baseYear));html+=`<tr><td>${esc(p.name)}</td><td>${p.year}</td><td>${fmt(p.cost)}</td><td>${fmt(adj)}</td></tr>`});
+  return html+'</table></div>';
+}
+
+function makeReportChart(rows, kind){
+  const c=document.createElement('canvas'); c.width=1000; c.height=360;
+  const ctx=c.getContext('2d'), w=c.width, h=c.height, pad=58;
+  ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,w,h);
+  ctx.font='14px system-ui'; ctx.lineWidth=1;
+  let title = kind==='payments' ? 'Owner quarterly payment by year' : 'Projected fund balances';
+  ctx.fillStyle='#263238'; ctx.font='bold 20px system-ui'; ctx.fillText(title, pad, 30);
+  ctx.font='13px system-ui'; ctx.fillStyle='#657184';
+  let vals=[];
+  if(kind==='payments'){
+    rows.forEach(r=>{ vals.push(r.ordinaryQ||0, r.specialQ||0, (r.ordinaryQ||0)+(r.specialQ||0)); });
+  }else{
+    rows.forEach(r=>{ vals.push(r.admin, r.reserve, r.total); });
+  }
+  vals.push(0);
+  let max=Math.max(...vals)*1.18, min=Math.min(...vals);
+  if(min>0) min=0; if(max<1000) max=1000;
+  const plotH=h-pad*1.55-pad, plotW=w-pad*2;
+  ctx.strokeStyle='#e5ebe8'; ctx.fillStyle='#667085'; ctx.font='12px system-ui';
+  for(let i=0;i<5;i++){
+    let y=pad+(plotH)*i/4;
+    ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(w-pad,y); ctx.stroke();
+    let val=max-(max-min)*i/4; ctx.fillText(fmt(val), 8, y+4);
+  }
+  function y(val){return pad+(max-val)/(max-min)*plotH}
+  function x(i){return pad+plotW*i/(rows.length-1 || 1)}
+  if(kind==='payments'){
+    const barW=Math.min(70, plotW/(rows.length*2.2));
+    rows.forEach((r,i)=>{
+      let xx=x(i)-barW/2, base=y(0);
+      let oq=r.ordinaryQ||0, sq=r.specialQ||0;
+      ctx.fillStyle='#0b4b57'; ctx.fillRect(xx,y(oq),barW,base-y(oq));
+      ctx.fillStyle='#0f9f75'; ctx.fillRect(xx,y(oq+sq),barW,y(oq)-y(oq+sq));
+      ctx.fillStyle='#263238'; ctx.fillText(r.year, xx+6, h-18);
+    });
+    ctx.fillStyle='#0b4b57'; ctx.fillRect(pad,45,14,14); ctx.fillStyle='#263238'; ctx.fillText('Ordinary levy',pad+20,57);
+    ctx.fillStyle='#0f9f75'; ctx.fillRect(pad+140,45,14,14); ctx.fillStyle='#263238'; ctx.fillText('Special levy',pad+160,57);
+  }else{
+    const series=[['admin','#147eb8','Admin'],['reserve','#0f9f75','Reserve'],['total','#b7791f','Total cash']];
+    series.forEach(([key,color,label],si)=>{
+      ctx.strokeStyle=color; ctx.lineWidth=4; ctx.beginPath();
+      rows.forEach((r,i)=>{let xx=x(i), yy=y(r[key]); i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy)}); ctx.stroke();
+      rows.forEach((r,i)=>{ctx.fillStyle=color; ctx.beginPath(); ctx.arc(x(i),y(r[key]),4,0,Math.PI*2); ctx.fill();});
+      ctx.fillStyle=color; ctx.fillRect(pad+si*130,45,14,14); ctx.fillStyle='#263238'; ctx.font='12px system-ui'; ctx.fillText(label,pad+si*130+20,57);
+    });
+    ctx.fillStyle='#263238'; ctx.font='12px system-ui'; rows.forEach((r,i)=>ctx.fillText(r.year,x(i)-14,h-18));
+  }
+  return c.toDataURL('image/png');
+}
+function renderReport(m){
+  let x=m.x;
+  let scenarioName = state.selected==='manual' ? 'Manual scenario' : (presets[state.selected]?.name || 'Manual scenario');
+  let rationale=generatedRationale(m);
+  document.getElementById('printSubtitle').textContent=`Generated ${today}. Scenario: ${scenarioName}.`;
+  let ownerAnnualDuring=(m.ordinaryQuarter+m.specialQuarter)*4;
+  const chartRows=m.rows.map((r,i)=>({...r, ordinaryQ:m.ordinaryQuarter, specialQ:(i<x.specialYears?m.specialQuarter:0)}));
+  const fundChart=makeReportChart(chartRows,'funds');
+  const paymentChart=makeReportChart(chartRows,'payments');
+  document.getElementById('reportPreview').innerHTML=`
+    <div class="reportOnly"><div class="printTitle"><strong>York Views Levy Projection Report</strong></div><p>Generated ${today}. Scenario: ${esc(scenarioName)}.</p></div>
+    <div class="reportBox printAvoidBreak"><h3>Executive summary</h3>
+      <div class="reportGrid">
+        <p><strong>Opening admin fund:</strong><br>${fmt2(x.adminOpen)}</p>
+        <p><strong>Opening reserve fund:</strong><br>${fmt2(x.reserveOpen)}</p>
+        <p><strong>Ordinary levy modelled:</strong><br>${fmt(m.ordinaryQuarter)} / quarter per owner</p>
+        <p><strong>Special levy modelled:</strong><br>${fmt(m.specialQuarter)} / quarter equivalent per owner for ${x.specialYears} years</p>
+        <p><strong>Total during special levy:</strong><br>${fmt(m.ordinaryQuarter+m.specialQuarter)} / quarter, or ${fmt(ownerAnnualDuring)} / year</p>
+        <p><strong>Lowest projected reserve:</strong><br>${fmt(m.minReserve)}</p>
+      </div>
+    </div>
+    <div class="printAvoidBreak"><h3>Selected scenario rationale</h3><div class="reportRationale">${textToParagraphs(rationale)}</div></div>
+    <div class="printAvoidBreak"><h3>Automated recommendation</h3><div class="reportBox">${recommendationEngine(m)}</div></div>
+    <div class="printAvoidBreak"><h3>Automated interpretation</h3><div class="reportBox">${interpretation(m)}</div></div>
+    <div class="printAvoidBreak"><h3>Projection charts</h3><div class="chartGrid"><img class="reportChart" src="${fundChart}" alt="Projected fund balances chart"><img class="reportChart" src="${paymentChart}" alt="Owner quarterly payment chart"></div></div>
+    <div class="printAvoidBreak"><h3>Major works included</h3>${reportWorksTable(m)}</div>
+    <div><h3>Five-year projection</h3>${reportProjectionTable(m.rows)}</div>
+    <div class="printAvoidBreak"><h3>Governance assumption register</h3><div class="tableScroll"><table>${governanceAssumptions(m)}</table></div></div>
+    <div class="printAvoidBreak"><h3>Key assumptions</h3><ul><li>${x.lots} lots/owners.</li><li>Annual admin expenses baseline ${fmt(x.adminExp)}, inflated at ${(x.adminInfl*100).toFixed(1)}% per year.</li><li>Construction inflation ${(x.constructInfl*100).toFixed(1)}% per year for planned works.</li><li>Levy arrears rate ${(x.arrearsRate*100).toFixed(1)}%; existing arrears ${fmt2(x.arrears)} recovered over two years in the model.</li><li>Reserve interest ${(x.interestRate*100).toFixed(1)}% per year.</li><li>Reserve target rebalancing: ${x.rebalanceOn?'enabled, target '+fmt(x.reserveTarget)+' with minimum reserve levy '+fmt(x.minReserveLevy)+'/qtr per owner after major works':'off'}.</li></ul></div>
+    <p class="small">Planning model only. Confirm current levy splits, updated quotes, engineering advice, GST treatment, insurance implications and strata accounting before circulation as a formal recommendation.</p>`;
+}
+function downloadApp(){let blob=new Blob([document.documentElement.outerHTML],{type:'text/html'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='york_views_levy_projection_planner.html';a.click();URL.revokeObjectURL(a.href)}
+['adminLevy','reserveLevy','specialAmount','specialFreq','specialYears','adminOpen','reserveOpen','investments','arrears','lots','adminExp','adminInfl','constructInfl','arrearsRate','interestRate','rebalanceOn','reserveTarget','minReserveLevy','stressAdminInfl','stressWorkShock','stressArrears'].forEach(id=>document.addEventListener('input',e=>{if(e.target.id===id){manualChanged();calc();}}));
+renderProjects();renderScenarioCards();calc();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(err => {
+      console.warn('Service worker registration failed:', err);
+    });
+  });
+}
+</script>
+</body>
+</html>
